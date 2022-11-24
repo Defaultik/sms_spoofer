@@ -2,7 +2,6 @@ import os
 import sys
 import csv
 import configparser
-import platform
 
 try:
     import vonage
