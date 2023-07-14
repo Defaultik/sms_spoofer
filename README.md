@@ -2,7 +2,7 @@
 this utility allows you to send SMS to any phone number from any name with any content (for example send notification about changed password via SMS)
 
 ![alt-text](https://i.imgur.com/hk6Istm.png)
-![alt-text](https://i.imgur.com/zK1IOXW.jpg)
+<img width="100" height="215 src="https://i.imgur.com/zK1IOXW.jpg">
 
 ## f.a.q
 **(?) is this free?**
