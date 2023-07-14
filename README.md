@@ -12,3 +12,6 @@ yes, it is supports unicode so program works both in English and in Russian, Chi
 
 **(?) can I get a ban?**
 yes, your account can get a ban from Vonage if you violate the [terms of use](https://www.vonage.com/legal/communications-apis/terms-of-use/)
+
+**(?) can I use it on linux?**
+yes you can, the utility is not demanding on the system, and the functions are adapted to both systems
