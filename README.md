@@ -1,7 +1,8 @@
 ## sms_spoofer
-sms spoofer with additional features (save numbers in contacts) on Vonage API
+this utility allows you to send SMS to any phone number from any name with any content (for example send notification about changed password via SMS)
 
 ![alt-text](https://i.imgur.com/hk6Istm.png)
+![alt-text](https://i.imgur.com/zK1IOXW.jpg)
 
 ## f.a.q
 **(?) is this free?**
