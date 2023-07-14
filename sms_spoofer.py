@@ -1,29 +1,48 @@
-import os
-import sys
-import csv
-import configparser
+# ordered imports, cuz in the first version of the program it was crazy
+import os, sys, csv, configparser
+from time import sleep
+
 
 try:
     import vonage
 except ImportError:
-    os.system("pip install vonage")
+    install_confirm = input("ERROR: Vonage distributions wasn't found\nDo you want to install (Y/N): ") # added question if user wants to install library
+
+    if (install_confirm.lower() == "y"):
+        os.system("pip install vonage")
+    else:
+        exit()
 finally:
     import vonage
-
+    print("Loading...")
+    
 config = configparser.ConfigParser()
 
 
+# wrote function to clear terminal on both types of systems (unix-like and windows)
+def clear():
+    if (sys.platform == "win32"):
+        os.system("cls")
+    else:
+        os.system("clear")
+
+
+# my shitty function about checking if string is english or another language
+def is_latin(string):
+    return string.isalpha() and string.isascii()
+
+
+# function that checks if we have all needed files in directory, and if we don't - create them
 def main():
     try:
         open("config.ini")
         config.read("config.ini")
-
-        open("contacts.csv")
     except FileNotFoundError:
-        vonage_api_key = input("[!] Type your Vonage API key: ")
-        vonage_api_secret = input("[!] Type your Vonage API Secret: ")
+        vonage_api_key = input("Enter your Vonage API key: ")
+        vonage_api_secret = input("Enter your Vonage API Secret: ")
 
         config.add_section("api_credentials")
+
         config.set("api_credentials", "api_key", vonage_api_key)
         config.set("api_credentials", "api_secret", vonage_api_secret)
 
@@ -32,29 +51,33 @@ def main():
 
         config.read("config.ini")
 
-        fieldnames = ["name", "phone_number"]
+    try:
+        open("contacts.csv")
+    except FileNotFoundError:
         with open("contacts.csv", "w", newline="") as contacts_file:
-            writer = csv.DictWriter(contacts_file, fieldnames=fieldnames)
+            writer = csv.DictWriter(contacts_file, fieldnames=("name", "phone_number"))
             writer.writeheader()
-
-
-def clear():
-    if (sys.platform == "win32"):
-        os.system("cls")
-    else:
-        os.system("clear")
 
 
 def menu():
     clear()
 
-    menu_tabs = ["Phone Number", "Contacts", "Change API credentials", "Exit"]
+    print("\nWelcome to the SMS Spoofer!")
+    print("SMS Spoofer is made in educational purposes")
+    print("\nby Defaultik\n")
 
-    print("Welcome to SMS Spoofer!")
-    for i, name in enumerate(menu_tabs):
+    # i just like this method where computer writes all of menu tabs instead of you :)
+    menu_tabs = (
+        "Phone Number",
+        "Contacts",
+        "Change API credentials",
+        "Exit"
+    )
+
+    for i, name in enumerate(menu_tabs): 
         print(f"[{i + 1}]", name)
-    
-    selected_tab = input("\nSelect task and press Enter: ")
+
+    selected_tab = input("Enter your task: ")
 
     if (selected_tab == "1"):
         dial_number()
@@ -63,10 +86,10 @@ def menu():
     elif (selected_tab == "3"):
         change_api_credentials()
     elif (selected_tab == "4"):
-        raise SystemExit
+        exit()
 
 
-def send_sms(name, number, text):
+def send_sms(number, sender, text):
     client = vonage.Client(
         key = config["api_credentials"]["api_key"],
         secret = config["api_credentials"]["api_secret"]
@@ -74,27 +97,37 @@ def send_sms(name, number, text):
 
     sms = vonage.Sms(client)
 
-    responseData = sms.send_message(
-        {
-            "from": name,
-            "to": number,
-            "text": text,
-        }
-    )
+    if (is_latin(text)): # did it because was report about problems with sending sms's on another languages (not english)
+        responseData = sms.send_message(
+            {
+                "from": sender,
+                "to": number,
+                "text": text
+            }
+        )
+    else:
+        responseData = sms.send_message(
+            {
+                "from": sender,
+                "to": number,
+                "text": text,
+                "type": "unicode"
+            }
+        )
 
     if responseData["messages"][0]["status"] == "0":
-        print("SMS sent successfully.")
+        print("Message sent successfully.")
     else:
-        print(f"SMS failed with error: {responseData['messages'][0]['error-text']}")
+        print(f"Message failed with error: {responseData['messages'][0]['error-text']}")
 
 
 def dial_number():
-    sms_victim_number = input("\nVictim number: ")
+    sms_victim_number = input("\nVictim number: ").replace("+", "").replace(" ", "") # removing pluses and spaces for VonageAPI which accepts only integer number
 
     sms_sender_name = input("Sender name: ")
     sms_text = input("Text of SMS: ")
 
-    send_sms(sms_sender_name, sms_victim_number, sms_text)
+    send_sms(sms_victim_number, sms_sender_name, sms_text)
 
 
 def contacts():
@@ -109,10 +142,12 @@ def contacts():
     print("\n[*] Create a new contact")
     print("[X] Cancel")
 
-    contacts_select_task = input("\nSelect task and press Enter: ")
+    contacts_select_task = input("\nEnter task: ")
 
     if (contacts_select_task == "*"):
         new_contact()
+    elif (contacts_select_task.lower() == "x"): # did in in .lower() cuz we need to check any 'x' (small and large)
+        pass
     else:
         with open("contacts.csv", "r") as contacts_file:
             reader = csv.DictReader(contacts_file)
@@ -124,29 +159,26 @@ def contacts():
 
         sms_victim_number = rows[select_num]["phone_number"]
         sms_text = input("Text of SMS: ")
-
-        send_sms(sms_sender_name, sms_victim_number, sms_text)
+        
+        send_sms(sms_victim_number, sms_sender_name, sms_text)
 
 
 def new_contact():
     contact_name = input("\nContact name: ")
-    contact_number = input("Contact number: ").replace("+", "").replace(" ", "")
+    contact_number = input("Contact number: ").replace("+", "").replace(" ", "") # removing pluses and spaces for VonageAPI which accepts only integer number
         
     with open("contacts.csv", "a", newline = "") as contacts_file:
-        fieldnames = ["name", "phone_number"]
-
-        writer = csv.DictWriter(contacts_file, fieldnames = fieldnames)
+        writer = csv.DictWriter(contacts_file, fieldnames=("name", "phone_number"))
         writer.writerow({"name": contact_name, "phone_number": contact_number})
 
-    contacts()
 
-
+# just function that changes data in a file
 def change_api_credentials():
-    sure = input("[?] Are you sure you want to change API Credentials (y/n): ")
+    sure = input("Are you sure you want to change API Credentials (Y/N): ")
 
-    if (sure.lower() == "y"):
-        vonage_api_key = input("\n[!] Type your Vonage API key: ")
-        vonage_api_secret = input("[!] Type your Vonage API Secret: ")
+    if (sure.lower() == "y"): # did in in .lower() cuz we need to check any 'y' (small and large)
+        vonage_api_key = input("\nEnter your Vonage API key: ")
+        vonage_api_secret = input("Enter your Vonage API Secret: ")
 
         config.set("api_credentials", "api_key", vonage_api_key)
         config.set("api_credentials", "api_secret", vonage_api_secret)
@@ -160,5 +192,10 @@ def change_api_credentials():
 if __name__ == "__main__":
     main()
 
-    while True:
-        Menu = menu()
+    while True: # putting menu in cycle to not call all the time menu(); also a sleep here so that the user can see the logs
+        sleep(1)
+        menu()
+
+
+# SMS Spoofer by Defaultik
+# https://t.me/defaultiiik
