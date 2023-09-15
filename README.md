@@ -1,7 +1,7 @@
 ## sms_spoofer
 this utility allows you to send SMS to any phone number from any name with any content (for example send notification about changed password via SMS)
 
-![alt-text](https://i.imgur.com/hk6Istm.png)
+![alt-text](https://i.imgur.com/zsosj2D.png)
 
 ## f.a.q
 **(?) is this free?**
