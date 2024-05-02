@@ -69,6 +69,7 @@ def menu():
     # i just like this method where computer writes all of menu tabs instead of you :)
     menu_tabs = (
         "Phone Number",
+        "Bulk",
         "Contacts",
         "Change API credentials",
         "Exit"
@@ -82,10 +83,12 @@ def menu():
     if (selected_tab == "1"):
         dial_number()
     elif (selected_tab == "2"):
-        contacts()
+        bulk()
     elif (selected_tab == "3"):
-        change_api_credentials()
+        contacts()
     elif (selected_tab == "4"):
+        change_api_credentials()
+    elif (selected_tab == "5"):
         exit()
 
 
@@ -96,24 +99,12 @@ def send_sms(number, sender, text):
     )
 
     sms = vonage.Sms(client)
-
-    if (is_latin(text)): # did it because was report about problems with sending sms's on another languages (not english)
-        responseData = sms.send_message(
-            {
-                "from": sender,
-                "to": number,
-                "text": text
-            }
-        )
-    else:
-        responseData = sms.send_message(
-            {
-                "from": sender,
-                "to": number,
-                "text": text,
-                "type": "unicode"
-            }
-        )
+    responseData = sms.send_message({
+        "from": sender, 
+        "to": number, 
+        "text": text, 
+        "type": "unicode"
+    })
 
     if responseData["messages"][0]["status"] == "0":
         print("Message sent successfully.")
@@ -128,6 +119,31 @@ def dial_number():
     sms_text = input("Text of SMS: ")
 
     send_sms(sms_victim_number, sms_sender_name, sms_text)
+
+
+def bulk():
+    numbers = []
+
+    bulk_type = input("Bulk all of your contacts | Manual (1/2): ")
+    if bulk_type == "1":
+        with open("contacts.csv", "r") as contacts_file:
+            reader = csv.DictReader(contacts_file)
+
+            for row in list(reader):
+                numbers.append(row["phone_number"])
+    else:
+        numbers_count = int(input("\nHow many numbers do you want to bulk: "))
+
+        for i in range(numbers_count):
+            sms_victim_number = input("#%d Victim number: " % i + 1).replace("+", "").replace(" ", "")
+            numbers.append(sms_victim_number)
+
+    sms_sender_name = input("Sender name: ")
+    sms_text = input("Text of SMS: ")
+    print()
+
+    for i in numbers:
+        send_sms(i, sms_sender_name, sms_text)
 
 
 def contacts():
