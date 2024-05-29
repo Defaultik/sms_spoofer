@@ -31,3 +31,7 @@ yes, your account can get a ban from Vonage if you violate the [terms of use](ht
 
 **(?) can I use it on linux?**
 yes you can, the utility is not demanding on the system, and the functions are adapted to both systems
+
+
+##
+**i'll glad to get star from you ❤️**
