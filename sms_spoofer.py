@@ -15,11 +15,9 @@ except ImportError:
 finally:
     import vonage
     print("Loading...")
-    
-config = configparser.ConfigParser()
 
 
-# wrote function to clear terminal on both types of systems (unix-like and windows)
+# function to clear terminal on both types of systems (unix-like and windows)
 def clear():
     if (sys.platform == "win32"):
         os.system("cls")
@@ -27,16 +25,19 @@ def clear():
         os.system("clear")
 
 
-# my shitty function about checking if string is english or another language
-def is_latin(string):
-    return string.isalpha() and string.isascii()
+def print_options(options):
+    for i, name in enumerate(options):
+        print(f"[{i + 1}]", name)
 
 
 # function that checks if we have all needed files in directory, and if we don't - create them
 def main():
+    global config
+
+    config = configparser.ConfigParser()
+
     try:
         open("config.ini")
-        config.read("config.ini")
     except FileNotFoundError:
         vonage_api_key = input("Enter your Vonage API key: ")
         vonage_api_secret = input("Enter your Vonage API Secret: ")
@@ -48,7 +49,7 @@ def main():
 
         with open("config.ini", "w") as config_file:
             config.write(config_file)
-
+    finally:
         config.read("config.ini")
 
     try:
@@ -62,34 +63,23 @@ def main():
 def menu():
     clear()
 
-    print("\nWelcome to the SMS Spoofer!")
+    print("Welcome to the SMS Spoofer!")
     print("SMS Spoofer is made in educational purposes")
     print("\nby Defaultik\n")
 
-    # i just like this method where computer writes all of menu tabs instead of you :)
-    menu_tabs = (
-        "Phone Number",
-        "Bulk",
-        "Contacts",
-        "Change API credentials",
-        "Exit"
-    )
-
-    for i, name in enumerate(menu_tabs): 
-        print(f"[{i + 1}]", name)
-
+    print_options(("Phone Number", "Bulk", "Contacts", "Change API credentials", "Exit"))
     selected_tab = input("Enter your task: ")
-
-    if (selected_tab == "1"):
-        dial_number()
-    elif (selected_tab == "2"):
-        bulk()
-    elif (selected_tab == "3"):
-        contacts()
-    elif (selected_tab == "4"):
-        change_api_credentials()
-    elif (selected_tab == "5"):
-        exit()
+    match selected_tab:
+        case "1":
+            dial_number()
+        case "2":
+            bulk()
+        case "3":
+            contacts()
+        case "4":
+            change_api_credentials()
+        case "5":
+            exit()
 
 
 def send_sms(number, sender, text):
@@ -107,16 +97,16 @@ def send_sms(number, sender, text):
     })
 
     if responseData["messages"][0]["status"] == "0":
-        print("Message sent successfully.")
+        print("\nMessage sent successfully.")
     else:
-        print(f"Message failed with error: {responseData['messages'][0]['error-text']}")
+        print(f"\nMessage failed with error: {responseData['messages'][0]['error-text']}")
 
 
 def dial_number():
     sms_victim_number = input("\nVictim number: ").replace("+", "").replace(" ", "") # removing pluses and spaces for VonageAPI which accepts only integer number
 
     sms_sender_name = input("Sender name: ")
-    sms_text = input("Text of SMS: ")
+    sms_text = input("Text of the SMS: ")
 
     send_sms(sms_victim_number, sms_sender_name, sms_text)
 
@@ -125,21 +115,24 @@ def bulk():
     numbers = []
 
     bulk_type = input("Bulk all of your contacts | Manual (1/2): ")
-    if bulk_type == "1":
-        with open("contacts.csv", "r") as contacts_file:
-            reader = csv.DictReader(contacts_file)
+    match bulk_type:
+        case "1":
+            with open("contacts.csv", "r") as contacts_file:
+                reader = csv.DictReader(contacts_file)
 
-            for row in list(reader):
-                numbers.append(row["phone_number"])
-    else:
-        numbers_count = int(input("\nHow many numbers do you want to bulk: "))
+                for row in list(reader):
+                    numbers.append(row["phone_number"])
+        case "2":
+            numbers_count = int(input("\nHow many numbers do you want to bulk: "))
 
-        for i in range(numbers_count):
-            sms_victim_number = input("#%d Victim number: " % i + 1).replace("+", "").replace(" ", "")
-            numbers.append(sms_victim_number)
+            for i in range(numbers_count):
+                sms_victim_number = input("#%d Victim number: " % i + 1).replace("+", "").replace(" ", "")
+                numbers.append(sms_victim_number)
+        case _:
+            menu()
 
     sms_sender_name = input("Sender name: ")
-    sms_text = input("Text of SMS: ")
+    sms_text = input("Text of the SMS: ")
     print()
 
     for i in numbers:
@@ -159,24 +152,23 @@ def contacts():
     print("[X] Cancel")
 
     contacts_select_task = input("\nEnter task: ")
+    match contacts_select_task:
+        case "*":
+            new_contact()
+        case contacts_select_task if contacts_select_task.lower()  == "x":
+            menu()
+        case _:
+            with open("contacts.csv", "r") as contacts_file:
+                reader = csv.DictReader(contacts_file)
+                rows = list(reader)
 
-    if (contacts_select_task == "*"):
-        new_contact()
-    elif (contacts_select_task.lower() == "x"): # did in in .lower() cuz we need to check any 'x' (small and large)
-        pass
-    else:
-        with open("contacts.csv", "r") as contacts_file:
-            reader = csv.DictReader(contacts_file)
-            rows = list(reader)
+            select_num = int(contacts_select_task) - 1
 
-        select_num = int(contacts_select_task) - 1
-
-        sms_sender_name = input("Sender name: ")
-
-        sms_victim_number = rows[select_num]["phone_number"]
-        sms_text = input("Text of SMS: ")
-        
-        send_sms(sms_victim_number, sms_sender_name, sms_text)
+            sms_sender_name = input("Sender name: ")
+            sms_victim_number = rows[select_num]["phone_number"]
+            sms_text = input("Text of the SMS: ")
+            
+            send_sms(sms_victim_number, sms_sender_name, sms_text)
 
 
 def new_contact():
@@ -191,7 +183,6 @@ def new_contact():
 # just function that changes data in a file
 def change_api_credentials():
     sure = input("Are you sure you want to change API Credentials (Y/N): ")
-
     if (sure.lower() == "y"): # did in in .lower() cuz we need to check any 'y' (small and large)
         vonage_api_key = input("\nEnter your Vonage API key: ")
         vonage_api_secret = input("Enter your Vonage API Secret: ")
@@ -214,4 +205,4 @@ if __name__ == "__main__":
 
 
 # SMS Spoofer by Defaultik
-# https://t.me/defaultiiik
+# https://github.com/Defaultik
