@@ -34,4 +34,4 @@ yes you can, the utility is not demanding on the system, and the functions are a
 
 
 ##
-**i'll glad to get star from you ❤️**
+**i'll glad to get a star from you ❤️**
