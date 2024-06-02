@@ -1,20 +1,23 @@
-# ordered imports, cuz in the first version of the program it was crazy
 import os, sys, csv, configparser
 from time import sleep
 
 
-try:
-    import vonage
-except ImportError:
-    install_confirm = input("ERROR: Vonage distributions wasn't found\nDo you want to install (Y/N): ") # added question if user wants to install library
+def init():
+    try:
+        import vonage
+    except ImportError:
+        install_confirm = input("ERROR: Vonage distributions wasn't found\nDo you want to install (Y/N): ") # added question if user wants to install library
 
-    if (install_confirm.lower() == "y"):
-        os.system("pip install vonage")
-    else:
-        exit()
-finally:
-    import vonage
-    print("Loading...")
+        if (install_confirm.lower() == "y"):
+            os.system("pip install vonage")
+        else:
+            exit()
+    finally:
+        import vonage
+        print("Loading...")
+
+    if sys.version_info < (3, 10):
+        print("ERROR: Inappropriate Python version!\nFor properly work of the program you should instal Python 3.10 or higher")
 
 
 # function to clear terminal on both types of systems (unix-like and windows)
@@ -197,7 +200,7 @@ def change_api_credentials():
 
 
 if __name__ == "__main__":
-    main()
+    init()
 
     while True: # putting menu in cycle to not call all the time menu(); also a sleep here so that the user can see the logs
         sleep(1)
