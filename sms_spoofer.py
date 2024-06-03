@@ -201,6 +201,7 @@ def change_api_credentials():
 
 if __name__ == "__main__":
     init()
+    main()
 
     while True: # putting menu in cycle to not call all the time menu(); also a sleep here so that the user can see the logs
         sleep(1)
