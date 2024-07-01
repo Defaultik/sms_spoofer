@@ -12,9 +12,6 @@ def init():
             os.system("pip install vonage")
         else:
             exit()
-    finally:
-        import vonage
-        print("Loading...")
 
     if sys.version_info < (3, 10):
         print("ERROR: Inappropriate Python version!\nFor properly work of the program you should instal Python 3.10 or higher")
@@ -201,6 +198,8 @@ def change_api_credentials():
 
 if __name__ == "__main__":
     init()
+    import vonage
+        
     main()
 
     while True: # putting menu in cycle to not call all the time menu(); also a sleep here so that the user can see the logs
