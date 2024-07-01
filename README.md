@@ -9,14 +9,19 @@ this utility allows you to send SMS to any phone number from any name with any c
 ```
 1) download python3
 2) download and unpack sms_spoofer.zip
-3) python sms_spoofer.py
+
+(in unpacked folder)
+3) pip install -r requirements.txt
+4) python sms_spoofer.py
 ```
 
 **for linux users**
 ```
-1) sudo apt-get install python3 git
-2) git clone https://github.com/Defaultik/sms_spoofer
-3) python sms_spoofer.py
+$ sudo apt-get install python3 git
+$ git clone https://github.com/Defaultik/sms_spoofer
+$ cd sms_spoofer
+$ pip3 install -r requirements.txt
+$ python sms_spoofer.py
 ```
 
 ## f.a.q
