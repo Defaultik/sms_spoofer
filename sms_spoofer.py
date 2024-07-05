@@ -1,4 +1,8 @@
-import os, sys, csv, configparser, vonage
+import os
+import sys
+import csv
+import configparser
+import vonage
 from time import sleep
 
 
@@ -11,6 +15,7 @@ def clear():
 
 
 def print_options(options):
+    # Print a list of options
     for i, name in enumerate(options):
         print(f"[{i + 1}]", name)
 
@@ -27,13 +32,13 @@ def main():
             writer.writeheader()
 
     if not os.path.exists("config.ini"):
-        vonage_api_key = input("Enter your Vonage API key: ")
-        vonage_api_secret = input("Enter your Vonage API Secret: ")
+        api_key = input("Enter your Vonage API key: ")
+        api_secret = input("Enter your Vonage API Secret: ")
 
         config.add_section("api_credentials")
 
-        config.set("api_credentials", "api_key", vonage_api_key)
-        config.set("api_credentials", "api_secret", vonage_api_secret)
+        config.set("api_credentials", "api_key", api_key)
+        config.set("api_credentials", "api_secret", api_secret)
 
         with open("config.ini", "w") as config_file:
             config.write(config_file)
@@ -70,22 +75,22 @@ def menu():
 def send_sms(number, sender, text):
     # Function to send SMS
     client = vonage.Client(
-        key = config["api_credentials"]["api_key"],
-        secret = config["api_credentials"]["api_secret"]
+        key=config["api_credentials"]["api_key"],
+        secret=config["api_credentials"]["api_secret"]
     )
 
     sms = vonage.Sms(client)
-    responseData = sms.send_message({
-        "from": sender, 
-        "to": number, 
-        "text": text, 
+    response_data = sms.send_message({
+        "from": sender,
+        "to": number,
+        "text": text,
         "type": "unicode"
     })
 
-    if responseData["messages"][0]["status"] == "0":
+    if response_data["messages"][0]["status"] == "0":
         print("\nMessage sent successfully.")
     else:
-        print(f"\nMessage failed with error: {responseData['messages'][0]['error-text']}")
+        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
 
 
 def dial_number():
@@ -190,16 +195,27 @@ def change_api_credentials():
         config.read("config.ini")
 
 
-if __name__ == "__main__":
+def check_python_version():
+    # Check if the Python version is appropriate
     if sys.version_info < (3, 10):
-        print("ERROR: Inappropriate Python version!\nFor properly work of the program you should instal Python 3.10 or higher")
-    else:
-        main()
+        print("ERROR: Inappropriate Python version!\nFor proper functioning of the program, you should install Python 3.10 or higher.")
+        return False
+    
+    return True
 
-        while True: # putting menu in cycle to not call all the time menu(); also a sleep here so that the user can see the logs
-            sleep(1)
-            menu()
 
+def run():
+    # Run the main program loop
+    main()
+
+    while True:
+        sleep(1)
+        menu()
+
+
+if __name__ == "__main__":
+    if check_python_version():
+        run()
 
 # SMS Spoofer by Defaultik
 # https://github.com/Defaultik
