@@ -7,7 +7,7 @@ from time import sleep
 
 
 def clear():
-    # Function to clear the terminal on both Unix-like and Windows systems
+    # Clear the terminal on Unix and Windows systems
     if (sys.platform == "win32"):
         os.system("cls")
     else:
@@ -20,8 +20,18 @@ def print_options(*args):
         print(f"[{i + 1}]", name)
 
 
+def check_python_version():
+    # Check if the Python version is appropriate
+    if sys.version_info < (3, 10):
+        print("ERROR: Inappropriate Python version!\nFor proper functioning of the program, you should install Python 3.10 or higher.")
+        return False
+    
+    return True
+
+
 def main():
-    # Function that checks if we have all needed files in directory, and if not - creates them
+    # Checks if we have all needed files in directory, and if not - creates them;
+    # Starts program cycle
     global config
 
     config = configparser.ConfigParser()
@@ -50,8 +60,29 @@ def main():
         menu()
 
 
+def send_sms(number, sender, text):
+    # Transmits user data to send sms API
+    client = vonage.Client(
+        key=config["api_credentials"]["api_key"],
+        secret=config["api_credentials"]["api_secret"]
+    )
+
+    sms = vonage.Sms(client)
+    response_data = sms.send_message({
+        "from": sender,
+        "to": number,
+        "text": text,
+        "type": "unicode"
+    })
+
+    if response_data["messages"][0]["status"] == "0":
+        print("\nMessage sent successfully.")
+    else:
+        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
+
+
 def menu():
-    # Function to display the main menu
+    # Main Menu Display
     clear()
 
     print("Welcome to the SMS Spoofer")
@@ -76,29 +107,8 @@ def menu():
             return
 
 
-def send_sms(number, sender, text):
-    # Function to send SMS
-    client = vonage.Client(
-        key=config["api_credentials"]["api_key"],
-        secret=config["api_credentials"]["api_secret"]
-    )
-
-    sms = vonage.Sms(client)
-    response_data = sms.send_message({
-        "from": sender,
-        "to": number,
-        "text": text,
-        "type": "unicode"
-    })
-
-    if response_data["messages"][0]["status"] == "0":
-        print("\nMessage sent successfully.")
-    else:
-        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
-
-
 def dial_number():
-    # Function to send SMS to a single number
+    # Send SMS to a single number menu
     number = input("\nVictim number: ").replace("+", "").replace(" ", "") # removing pluses and spaces for VonageAPI that accepts only integer number
     sender = input("Sender name: ")
     text = input("Text of the SMS: ")
@@ -107,7 +117,7 @@ def dial_number():
 
 
 def bulk_numbers():
-    # Function to send SMS to multiple numbers
+    # Send SMS to multiple numbers menu
     clear()
 
     print_options("All of contacts", "Manual")
@@ -137,7 +147,7 @@ def bulk_numbers():
 
 
 def open_contacts():
-    # Function to manage contacts
+    # Contact management (new contacts creation, send to contact sms)
     clear()
 
     with open("contacts.csv", "r") as contacts_file:
@@ -173,7 +183,7 @@ def open_contacts():
 
 
 def new_contact():
-    # Function to create a new contact
+    # New contacts creation menu
     contact_name = input("\nContact name: ")
     contact_number = input("Contact number: ").replace("+", "").replace(" ", "") # removing pluses and spaces for VonageAPI which accepts only integer number
         
@@ -183,7 +193,7 @@ def new_contact():
 
 
 def change_api_credentials():
-    # Function to change API credentials
+    # Change API credentials menu
     sure = input("Are you sure you want to change API Credentials (Y/N): ")
     if (sure.lower() == "y"): # did in in .lower() cuz we need to check any 'y' (small and large)
         api_key = input("\nEnter your new Vonage API key: ")
@@ -196,15 +206,6 @@ def change_api_credentials():
             config.write(config_file)
         
         config.read("config.ini")
-
-
-def check_python_version():
-    # Check if the Python version is appropriate
-    if sys.version_info < (3, 10):
-        print("ERROR: Inappropriate Python version!\nFor proper functioning of the program, you should install Python 3.10 or higher.")
-        return False
-    
-    return True
 
 
 if __name__ == "__main__":
