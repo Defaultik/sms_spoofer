@@ -14,9 +14,9 @@ def clear():
         os.system("clear")
 
 
-def print_options(options):
+def print_options(*args):
     # Print a list of options
-    for i, name in enumerate(options):
+    for i, name in enumerate(args):
         print(f"[{i + 1}]", name)
 
 
@@ -45,6 +45,10 @@ def main():
 
     config.read("config.ini")
 
+    while True:
+        sleep(1)
+        menu()
+
 
 def menu():
     # Function to display the main menu
@@ -54,15 +58,15 @@ def menu():
     print("SMS Spoofer is made in educational purposes")
     print("\nby Defaultik\n")
 
-    print_options(("Phone Number", "Bulk", "Contacts", "Change API credentials", "Exit"))
+    print_options("Phone Number", "Bulk", "Contacts", "Change API credentials", "Exit")
     selected_tab = input("Enter number of the task: ")
     match selected_tab:
         case "1":
             dial_number()
         case "2":
-            bulk()
+            bulk_numbers()
         case "3":
-            contacts()
+            open_contacts()
         case "4":
             change_api_credentials()
         case "5":
@@ -102,15 +106,14 @@ def dial_number():
     send_sms(number, sender, text)
 
 
-def bulk():
+def bulk_numbers():
     # Function to send SMS to multiple numbers
-    numbers = []
     clear()
 
-    print("Select a target")
-    print_options(("All of contacts", "Manual"))
+    print_options("All of contacts", "Manual")
     bulk_type = input("Enter number of the task: ")
 
+    numbers = []
     match bulk_type:
         case "1":
             with open("contacts.csv", "r") as contacts_file:
@@ -133,7 +136,7 @@ def bulk():
         send_sms(number, sender, text)
 
 
-def contacts():
+def open_contacts():
     # Function to manage contacts
     clear()
 
@@ -166,7 +169,7 @@ def contacts():
             except (ValueError, IndexError):
                 print("ERROR: Invalid option, try again")
                 sleep(1)
-                contacts()
+                open_contacts()
 
 
 def new_contact():
@@ -204,18 +207,9 @@ def check_python_version():
     return True
 
 
-def run():
-    # Run the main program loop
-    main()
-
-    while True:
-        sleep(1)
-        menu()
-
-
 if __name__ == "__main__":
     if check_python_version():
-        run()
+        main()
 
 # SMS Spoofer by Defaultik
 # https://github.com/Defaultik
