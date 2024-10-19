@@ -60,27 +60,6 @@ def main():
         menu()
 
 
-def send_sms(number, sender, text):
-    # Transmits user data to send sms API
-    client = vonage.Client(
-        key=config["api_credentials"]["api_key"],
-        secret=config["api_credentials"]["api_secret"]
-    )
-
-    sms = vonage.Sms(client)
-    response_data = sms.send_message({
-        "from": sender,
-        "to": number,
-        "text": text,
-        "type": "unicode"
-    })
-
-    if response_data["messages"][0]["status"] == "0":
-        print("\nMessage sent successfully.")
-    else:
-        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
-
-
 def menu():
     # Main Menu Display
     clear()
@@ -104,7 +83,27 @@ def menu():
             exit()
         case _:
             print("ERROR: Invalid option, try again")
-            return
+        
+
+def send_sms(number, sender, text):
+    # Transmits user data to send sms API
+    client = vonage.Client(
+        key=config["api_credentials"]["api_key"],
+        secret=config["api_credentials"]["api_secret"]
+    )
+
+    sms = vonage.Sms(client)
+    response_data = sms.send_message({
+        "from": sender,
+        "to": number,
+        "text": text,
+        "type": "unicode"
+    })
+
+    if response_data["messages"][0]["status"] == "0":
+        print("\nMessage sent successfully.")
+    else:
+        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
 
 
 def dial_number():
@@ -120,7 +119,7 @@ def bulk_numbers():
     # Send SMS to multiple numbers menu
     clear()
 
-    print_options("All of contacts", "Manual")
+    print_options("All of contacts", "Manual", "Back")
     bulk_type = input("Enter number of the task: ")
 
     numbers = []
@@ -135,6 +134,8 @@ def bulk_numbers():
             for i in range(count):
                 number = input(f"Victim number #{i + 1}: ").replace("+", "").replace(" ", "")
                 numbers.append(number)
+        case "3":
+            return
         case _:
             print("ERROR: Invalid option")
             return
@@ -156,7 +157,7 @@ def open_contacts():
             print(f"[{i + 1}]", row["name"])
 
     print("\n[*] Create a new contact")
-    print("[X] Cancel")
+    print("[X] Back")
 
     task = input("\nEnter number of the task: ")
     match task:
