@@ -5,24 +5,42 @@ this utility allows you to send SMS to any phone number from any name with any c
 ![alt-text](https://i.imgur.com/zsosj2D.png)
 
 ## installation
-**for windows users**
+<details><summary>windows</summary>
+  
 ```
-1) download python3
+1) download python 3.10+
 2) download and unpack sms_spoofer.zip
 
-(in unpacked folder)
+open terminal in unpacked folder and execute following commands
 3) pip install -r requirements.txt
-4) python sms_spoofer.py
+4) python source/menu-based/main.py
 ```
 
-**for linux users**
+</details>
+
+<details><summary>linux</summary>
+  
 ```
 $ sudo apt-get install python3 git
 $ git clone https://github.com/Defaultik/sms_spoofer
 $ cd sms_spoofer
 $ pip3 install -r requirements.txt
-$ python sms_spoofer.py
+$ python3 source/menu-based/main.py
 ```
+
+</details>
+
+<details><summary>macos</summary>
+  
+```
+$ brew install python3 git
+$ git clone https://github.com/Defaultik/sms_spoofer
+$ cd sms_spoofer
+$ pip3 install -r requirements.txt
+$ python3 source/menu-based/main.py
+```
+
+</details>
 
 ## f.a.q
 **(?) is this free?**
