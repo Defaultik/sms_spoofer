@@ -1,8 +1,10 @@
 import os
 import configparser
 import argparse
-import vonage
 from getpass import getpass
+
+from vonage import Vonage, Auth
+from vonage_sms import SmsMessage, SmsResponse
 
 
 def main():
@@ -30,26 +32,20 @@ def main():
     config.read("config.ini")
 
     send_sms(args.number, args.sender, args.text)
-
+    
 
 def send_sms(number, sender, text):
-    client = vonage.Client(
-        key=config["api_credentials"]["api_key"],
-        secret=config["api_credentials"]["api_secret"]
+    auth = Auth(
+        api_key=config["api_credentials"]["api_key"], 
+        api_secret=config["api_credentials"]["api_secret"]
     )
 
-    sms = vonage.Sms(client)
-    response_data = sms.send_message({
-        "from": sender,
-        "to": number,
-        "text": text,
-        "type": "unicode"
-    })
+    client = Vonage(auth=auth)
 
-    if response_data["messages"][0]["status"] == "0":
-        print("\nMessage sent successfully.")
-    else:
-        print(f"\nMessage failed with error: {response_data['messages'][0]['error-text']}")
+    message = SmsMessage(to=number, from_=sender, text=text, type="unicode")
+    response: SmsResponse = client.sms.send(message)
+    
+    return response
 
 
 if __name__ == "__main__":
