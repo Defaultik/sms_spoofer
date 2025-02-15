@@ -6,11 +6,10 @@ from vonage_sms import SmsMessage, SmsResponse
 from vonage_account import Balance
 
 
-config = configparser.ConfigParser()
-config.read(os.path.join("data", "config.ini"))
-
-
 def send_sms(number, sender, text):
+    config = configparser.ConfigParser()
+    config.read(os.path.join("data", "config.ini"))
+
     # Transmits user data to send sms
     auth = Auth(
         api_key=config["api_credentials"]["api_key"], 
@@ -26,6 +25,9 @@ def send_sms(number, sender, text):
 
 
 def get_balance():
+    config = configparser.ConfigParser()
+    config.read(os.path.join("data", "config.ini"))
+
     auth = Auth(
         api_key=config["api_credentials"]["api_key"], 
         api_secret=config["api_credentials"]["api_secret"]
