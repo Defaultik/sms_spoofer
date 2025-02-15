@@ -47,13 +47,13 @@ $ python3 source/menu-based/main.py
 unfortunately this program is just utility that works on API of big sms gateway, and this gateway takes money from every sms that you send
 
 **(?) does it support any other languages besides English?**
-yes, it is supports unicode so program works both in English and in Russian, Chinese and other languages
+yes, it is supports unicode so program works in English, Russian, Chinese and other languages
 
 **(?) can I get a ban?**
-yes, your account can get a ban from Vonage if you violate the [terms of use](https://www.vonage.com/legal/communications-apis/terms-of-use/)
+yes, your account can get a ban from Vonage if you violate their [terms of use](https://www.vonage.com/legal/communications-apis/terms-of-use/)
 
-**(?) can I use it on linux?**
-yes you can, the utility is not demanding on the system, and the functions are adapted to both systems
+**(?) can I use it on unix-like systems?**
+yes you can, the utility is not demanding on the system, and the functions are adapted to another systems
 
 
 ##
