@@ -1,5 +1,7 @@
 ## 📱 sms_spoofer
-this utility allows you to send SMS to any phone number from any name with any content (for example send notification about changed password via SMS)  
+```ONLY FOR EDUCATIONAL USAGE```
+
+this utility allows you to send SMS to any phone number from any name with any content (for example send notification about changed password via SMS)
 ([example #1](https://i.imgur.com/SOmATqN.jpg), [example #2](https://i.imgur.com/Ll26s2U.jpg))
 
 ![alt-text](https://i.imgur.com/2JNGiIi.png)
